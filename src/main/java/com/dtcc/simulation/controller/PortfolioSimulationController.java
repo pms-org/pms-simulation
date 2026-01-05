@@ -1,11 +1,14 @@
 package com.dtcc.simulation.controller;
 
-import com.dtcc.simulation.model.PortfolioCreateRequest;
-import com.dtcc.simulation.service.PortfolioManagerService;
-
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.dtcc.simulation.dto.PortfolioCreateRequest;
+import com.dtcc.simulation.service.PortfolioManagerService;
 
 @RestController
 @RequestMapping("/simulation")

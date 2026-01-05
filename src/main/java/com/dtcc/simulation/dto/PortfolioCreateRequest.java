@@ -1,4 +1,4 @@
-package com.dtcc.simulation.model;
+package com.dtcc.simulation.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

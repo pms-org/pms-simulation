@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.dtcc.simulation.model.PortfolioCreateRequest;
-import com.dtcc.simulation.model.PortfolioCreateResponse;
+import com.dtcc.simulation.dto.PortfolioCreateRequest;
+import com.dtcc.simulation.dto.PortfolioCreateResponse;
 
 @Service
 public class PortfolioClientService {

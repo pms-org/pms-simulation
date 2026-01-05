@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.dtcc.simulation.dto.TradeEvent;
 import com.dtcc.simulation.entity.PortfolioId;
 import com.dtcc.simulation.entity.Symbol;
-import com.dtcc.simulation.model.TradeEvent;
 import com.dtcc.simulation.repository.PortfolioIdRepository;
 import com.dtcc.simulation.repository.SymbolRepository;
 
