@@ -100,7 +100,7 @@ public class TradeGeneratorService {
             return t;
         }
 
-        // VALID TRADE
+
         t.setTradeId(UUID.randomUUID());
         t.setPricePerStock(100 + random.nextDouble(101));
         t.setQuantity(1 + random.nextLong(100));
