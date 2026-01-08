@@ -61,9 +61,9 @@ services:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_STREAM_PORT: 5552
       RABBITMQ_STREAM_NAME: trade-stream
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pmsdb
-      SPRING_DATASOURCE_USERNAME: pms
-      SPRING_DATASOURCE_PASSWORD: pms
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-instance-pms.cvk4yqey0ex7.us-east-2.rds.amazonaws.com:5432/simulation_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: PMS.2025
 
       AUTH_SERVER_URL: http://auth:8081
       API_GATEWAY_URL: http://pms-api-gateway:8080

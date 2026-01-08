@@ -37,10 +37,10 @@ spring:
       ack-mode: record
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/pmsdb
+    url:  ${DB_URL}
     driverClassName: org.postgresql.Driver
-    username: pms
-    password: pms
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   sql:
     init:
