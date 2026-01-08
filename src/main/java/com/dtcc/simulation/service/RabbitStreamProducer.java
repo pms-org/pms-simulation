@@ -22,10 +22,10 @@ public class RabbitStreamProducer {
     @Value("${app.rabbitmq.stream.name}")
     private String STREAM_NAME;
 
-    @Value("${app.rabbitmq.stream.username}")
+    @Value("${APP_RABBIT_STREAM_USERNAME:guest}")
     private String USERNAME;
 
-    @Value("${app.rabbitmq.stream.password}")
+    @Value("${APP_RABBIT_STREAM_PASSWORD:guest}")
     private String PASSWORD;
 
     @Value("${app.rabbitmq.stream.retry.max-attempts}")
@@ -39,7 +39,8 @@ public class RabbitStreamProducer {
 
     @PostConstruct
     public void init() {
-        log.info("Initializing RabbitMQ Stream Producer for host: {}, stream: {}", HOST, STREAM_NAME);
+        log.info("Initializing RabbitMQ Stream Producer for host: {}, port: {}, stream: {}", HOST, PORT, STREAM_NAME);
+        log.info("Using credentials - username: {}, password: {}", USERNAME, PASSWORD);
         
         env = createEnvironmentWithRetry(HOST);
 
