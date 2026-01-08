@@ -1,5 +1,6 @@
 server:
-    port: 8090
+  port: 8090
+
 spring:
   application:
     name: simulation
@@ -8,39 +9,35 @@ spring:
     oauth2:
       client:
         registration:
-          gateway-client: # Matches your Java ClientRegistrationId
+          gateway-client:
             provider: my-auth-server
-            client-id: simulation-service
-            client-secret: pms-secret
+            client-id: ${SIMULATION_CLIENT_ID:simulation-service}
+            client-secret: ${SIMULATION_CLIENT_SECRET:pms-secret}
             authorization-grant-type: client_credentials
             scope: openid,profile
         provider:
           my-auth-server:
-            issuer-uri: ${AUTH_SERVER_URL:http://auth:8081}    
+            issuer-uri: ${AUTH_SERVER_URL:http://auth:8081}
 
   kafka:
-    bootstrap-servers: localhost:9092
-
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
     properties:
-      schema.registry.url: http://localhost:8081
+      schema.registry.url: ${SCHEMA_REGISTRY:http://localhost:8081}
       specific.protobuf.value.type: com.dtcc.simulation.proto.TradeEventOuterClass$TradeEvent
-
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer
-
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer
-
     listener:
       ack-mode: record
 
   datasource:
-    url:  ${DB_URL}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/pmsdb}
     driverClassName: org.postgresql.Driver
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: ${DB_USER:pms}
+    password: ${DB_PASSWORD:pms}
 
   sql:
     init:
@@ -57,15 +54,17 @@ spring:
 
 app:
   kafka:
-    trade-topic: trade-events
+    trade-topic: ${KAFKA_TRADE_TOPIC:trade-events}
   rabbitmq:
     stream:
       host: ${RABBITMQ_HOST:localhost}
       port: ${RABBITMQ_STREAM_PORT:5552}
       name: ${RABBITMQ_STREAM_NAME:trade-stream}
-
+      username: ${RABBITMQ_USER:guest}
+      password: ${RABBITMQ_PASS:guest}
+      retry:
+        max-attempts: ${RABBITMQ_MAX_RETRIES:10}
+        delay-ms: ${RABBITMQ_RETRY_DELAY:3000}
 portfolio:
   service:
     url: ${API_GATEWAY_URL:http://pms-api-gateway:8080}/simulation
-
-
