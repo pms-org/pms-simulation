@@ -2,6 +2,7 @@ package com.dtcc.simulation.service;
 
 import java.util.UUID;
 
+import com.dtcc.simulation.client.GatewayClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,17 +16,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PortfolioManagerService {
 
-    @Autowired
-    private PortfolioClientService portfolioClientService;
-    @Autowired
-    private PortfolioIdRepository portfolioIdRepository;
+    private final GatewayClient gatewayClient;
+    private final PortfolioIdRepository portfolioIdRepository;
 
-    public UUID createAndStorePortfolio(PortfolioCreateRequest request) {
+    public UUID createAndStorePortfolio(
+            PortfolioCreateRequest request,
+            String authorizationHeader) {
 
-        UUID newPortfolioId = portfolioClientService.createPortfolio(request);
+        UUID newPortfolioId = gatewayClient
+                .callPortfolioService(request, authorizationHeader);
 
-        PortfolioId portfolioId = new PortfolioId(newPortfolioId);
-        portfolioIdRepository.save(portfolioId);
+        portfolioIdRepository.save(new PortfolioId(newPortfolioId));
 
         return newPortfolioId;
     }

@@ -1,27 +1,29 @@
 package com.dtcc.simulation.controller;
 
-import java.util.UUID;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 import com.dtcc.simulation.dto.PortfolioCreateRequest;
+import com.dtcc.simulation.dto.PortfolioCreateResponse;
 import com.dtcc.simulation.service.PortfolioManagerService;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/simulation")
+@RequiredArgsConstructor
 public class PortfolioSimulationController {
 
-    private PortfolioManagerService portfolioManagerService;
-
-    public PortfolioSimulationController(PortfolioManagerService portfolioManagerService) {
-        this.portfolioManagerService = portfolioManagerService;
-    }
+    private final PortfolioManagerService portfolioManagerService;
 
     @PostMapping("/create-portfolio")
-    public UUID createPortfolio(@RequestBody PortfolioCreateRequest request) {
-        return portfolioManagerService.createAndStorePortfolio(request);
+    public PortfolioCreateResponse createPortfolio(
+            @RequestBody PortfolioCreateRequest request,
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        UUID portfolioId =
+                portfolioManagerService.createAndStorePortfolio(request, authorizationHeader);
+
+        return new PortfolioCreateResponse(portfolioId);
     }
 }

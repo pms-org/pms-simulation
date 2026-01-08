@@ -1,23 +1,22 @@
 server:
-    port: 8090
+  port: 8090
+
 spring:
   application:
     name: simulation
 
+  # ===============================
+  # SECURITY (RESOURCE SERVER ONLY)
+  # ===============================
   security:
     oauth2:
-      client:
-        registration:
-          gateway-client: # Matches your Java ClientRegistrationId
-            provider: my-auth-server
-            client-id: simulation-service
-            client-secret: pms-secret
-            authorization-grant-type: client_credentials
-            scope: openid,profile
-        provider:
-          my-auth-server:
-            issuer-uri: ${AUTH_SERVER_URL:http://auth:8081}    
+      resourceserver:
+        jwt:
+          issuer-uri: http://auth:8081
 
+  # ===============================
+  # KAFKA
+  # ===============================
   kafka:
     bootstrap-servers: localhost:9092
 
@@ -36,9 +35,12 @@ spring:
     listener:
       ack-mode: record
 
+  # ===============================
+  # DATABASE
+  # ===============================
   datasource:
-    url:  ${DB_URL}
-    driverClassName: org.postgresql.Driver
+    url: ${DB_URL}
+    driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
@@ -46,26 +48,32 @@ spring:
     init:
       mode: always
       continue-on-error: true
+
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: true
     properties:
       hibernate:
-        format-sql: true
+        format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+# ===============================
+# APPLICATION CONFIG
+# ===============================
 app:
   kafka:
     trade-topic: trade-events
+
   rabbitmq:
     stream:
       host: ${RABBITMQ_HOST:localhost}
       port: ${RABBITMQ_STREAM_PORT:5552}
       name: ${RABBITMQ_STREAM_NAME:trade-stream}
 
+# ===============================
+# DOWNSTREAM SERVICES
+# ===============================
 portfolio:
   service:
-    url: ${API_GATEWAY_URL:http://pms-api-gateway:8080}/simulation
-
-
+    url: http://pms-api-gateway:8080/simulation
