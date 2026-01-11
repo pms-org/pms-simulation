@@ -22,10 +22,10 @@ public class RabbitStreamProducer {
     @Value("${app.rabbitmq.stream.name}")
     private String STREAM_NAME;
 
-    @Value("${APP_RABBIT_STREAM_USERNAME:guest}")
+    @Value("${app.rabbitmq.stream.username:guest}")
     private String USERNAME;
 
-    @Value("${APP_RABBIT_STREAM_PASSWORD:guest}")
+    @Value("${app.rabbitmq.stream.password:guest}")
     private String PASSWORD;
 
     @Value("${app.rabbitmq.stream.retry.max-attempts}")
