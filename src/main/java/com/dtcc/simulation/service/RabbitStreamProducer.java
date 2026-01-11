@@ -1,7 +1,7 @@
 package com.dtcc.simulation.service;
 
-import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import com.dtcc.simulation.proto.TradeEventProto;
 import com.rabbitmq.stream.Environment;
@@ -11,39 +11,42 @@ import com.rabbitmq.stream.Producer;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
+@Slf4j
 public class RabbitStreamProducer {
 
-    @Value("${app.rabbitmq.stream.port:5552}")
-    private int PORT;
+    @Value("${app.rabbitmq.stream.host}")
+    private String host;
 
-    @Value("${app.rabbitmq.stream.name:trade-stream}")
-    private String STREAM_NAME;
+    @Value("${app.rabbitmq.stream.port}")
+    private int port;
 
-    private  int MAX_RETRIES = 10;
-    private  int RETRY_DELAY_MS = 3000;
+    @Value("${app.rabbitmq.stream.name}")
+    private String streamName;
+
+    @Value("${app.rabbitmq.stream.username}")
+    private String username;
+
+    @Value("${app.rabbitmq.stream.password}")
+    private String password;
+
+    private static final int MAX_RETRIES = 10;
+    private static final int RETRY_DELAY_MS = 3000;
 
     private Environment env;
     private Producer producer;
 
     @PostConstruct
     public void init() {
-        String host = System.getenv("RABBITMQ_HOST");
-        if (host == null || host.isBlank()) {
-            host = "localhost";
-        }
-
-        env = createEnvironmentWithRetry(host);
-
-        createStreamIfNotExists(env, STREAM_NAME);
+        env = createEnvironmentWithRetry();
+        createStreamIfNotExists(env, streamName);
 
         producer = env.producerBuilder()
-                .stream(STREAM_NAME)
+                .stream(streamName)
                 .build();
     }
 
-    private Environment createEnvironmentWithRetry(String host) {
+    private Environment createEnvironmentWithRetry() {
         int attempts = 0;
         Exception lastException = null;
 
@@ -51,22 +54,23 @@ public class RabbitStreamProducer {
             try {
                 return Environment.builder()
                         .host(host)
-                        .port(PORT)
-                        .username("guest")
-                        .password("guest")
+                        .port(port)
+                        .username(username)
+                        .password(password)
                         .build();
             } catch (Exception e) {
                 lastException = e;
                 attempts++;
+                log.warn("RabbitMQ Stream connection failed. Retrying... ({}/{})", attempts, MAX_RETRIES);
                 try {
                     Thread.sleep(RETRY_DELAY_MS);
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
-                    throw new IllegalStateException("Thread interrupted during retry", ex);
+                    throw new IllegalStateException("Retry interrupted", ex);
                 }
             }
         }
-        throw new IllegalStateException("Failed to connect to RabbitMQ Stream after retries", lastException);
+        throw new IllegalStateException("Failed to connect to RabbitMQ Stream", lastException);
     }
 
     private void createStreamIfNotExists(Environment env, String streamName) {
@@ -80,16 +84,9 @@ public class RabbitStreamProducer {
     }
 
     public void publish(TradeEventProto event) {
-        if (producer == null) {
-            throw new IllegalStateException("Producer not initialized");
-        }
-
         if (event == null) {
             throw new IllegalArgumentException("TradeEvent cannot be null");
         }
-
-        // PEEK THE MESSAGE BEFORE SENDING
-        // log.info("PEEK RabbitMQ Stream Message: {}", event);
 
         Message msg = producer.messageBuilder()
                 .addData(event.toByteArray())

@@ -3,8 +3,8 @@ services:
     image: rabbitmq:3.13-management
     container_name: rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -17,10 +17,8 @@ services:
         rabbitmq-plugins enable rabbitmq_stream &&
         rabbitmq-server
       "
-      
     networks:
       - pms-network
-
     healthcheck:
       test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
       interval: 10s
@@ -31,20 +29,18 @@ services:
   postgres:
     image: postgres:16
     container_name: postgres
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: pmsdb
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_USER: pms
-      POSTGRES_PASSWORD: pms
-      POSTGRES_DB: pmsdb
     volumes:
       - pgdata:/var/lib/postgresql/data
-
     networks:
       - pms-network
-
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pms -d pmsdb"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d pmsdb"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -58,15 +54,21 @@ services:
       postgres:
         condition: service_healthy
     environment:
+      # RabbitMQ
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_STREAM_PORT: 5552
       RABBITMQ_STREAM_NAME: trade-stream
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db-instance-pms.cvk4yqey0ex7.us-east-2.rds.amazonaws.com:5432/simulation_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: PMS.2025
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
 
-      AUTH_SERVER_URL: http://auth:8081
-      API_GATEWAY_URL: http://pms-api-gateway:8080
+      # Database (matches application.yaml)
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      # External services
+      AUTH_SERVER_URL: ${AUTH_SERVER_URL}
+      PORTFOLIO_SERVICE_URL: ${API_GATEWAY_URL}
     ports:
       - "4000:8090"
     networks:
@@ -79,4 +81,3 @@ volumes:
 networks:
   pms-network:
     external: true
-

@@ -12,7 +12,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://auth:8081
+          issuer-uri: ${AUTH_SERVER_URL}
+
 
   # ===============================
   # KAFKA
@@ -67,13 +68,15 @@ app:
 
   rabbitmq:
     stream:
-      host: ${RABBITMQ_HOST:localhost}
-      port: ${RABBITMQ_STREAM_PORT:5552}
-      name: ${RABBITMQ_STREAM_NAME:trade-stream}
+      host: ${RABBITMQ_HOST}
+      port: ${RABBITMQ_STREAM_PORT}
+      name: ${RABBITMQ_STREAM_NAME}
+      username: ${RABBITMQ_USERNAME}
+      password: ${RABBITMQ_PASSWORD}
 
 # ===============================
 # DOWNSTREAM SERVICES
 # ===============================
 portfolio:
   service:
-    url: http://pms-api-gateway:8080/simulation
+    base-url: ${PORTFOLIO_SERVICE_URL}
