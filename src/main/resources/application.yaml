@@ -60,8 +60,8 @@ app:
       host: ${RABBITMQ_HOST:localhost}
       port: ${RABBITMQ_STREAM_PORT:5552}
       name: ${RABBITMQ_STREAM_NAME:trade-stream}
-      username: ${APP_RABBIT_STREAM_USERNAME:guest}
-      password: ${APP_RABBIT_STREAM_PASSWORD:guest}
+      username: ${SPRING_RABBITMQ_STREAM_USERNAME}
+      password: ${SPRING_RABBITMQ_STREAM_PASSWORD}
       retry:
         max-attempts: ${RABBITMQ_MAX_RETRIES:10}
         delay-ms: ${RABBITMQ_RETRY_DELAY:3000}
