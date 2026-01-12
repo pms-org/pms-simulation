@@ -2,6 +2,8 @@ services:
   rabbitmq:
     image: rabbitmq:3.13-management
     container_name: rabbitmq
+    env_file:
+      - .env
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
@@ -29,10 +31,12 @@ services:
   postgres:
     image: postgres:16
     container_name: postgres
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: pmsdb
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
     volumes:
@@ -40,7 +44,7 @@ services:
     networks:
       - pms-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d pmsdb"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -48,27 +52,13 @@ services:
   simulation:
     build: .
     container_name: pms-simulation
+    env_file:
+      - .env
     depends_on:
       rabbitmq:
         condition: service_healthy
       postgres:
         condition: service_healthy
-    environment:
-      # RabbitMQ
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_STREAM_PORT: 5552
-      RABBITMQ_STREAM_NAME: trade-stream
-      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
-
-      # Database (matches application.yaml)
-      DB_URL: ${DB_URL}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-
-      # External services
-      AUTH_SERVER_URL: ${AUTH_SERVER_URL}
-      PORTFOLIO_SERVICE_URL: ${API_GATEWAY_URL}
     ports:
       - "4000:8090"
     networks:

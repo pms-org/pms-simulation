@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +44,7 @@ public class TradeGeneratorService {
         updatePortfolioIdCache();
     }
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 30000)//30 sec 
     public void updatePortfolioIdCache() {
         List<UUID> newPortfolios = portfolioRepo.findAll()
                 .stream()
