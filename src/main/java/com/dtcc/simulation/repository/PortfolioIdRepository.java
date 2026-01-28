@@ -10,7 +10,5 @@ import com.dtcc.simulation.entity.PortfolioId;
 
 public interface PortfolioIdRepository extends JpaRepository<PortfolioId, UUID> {
 
-    @Query("SELECT p.portfolio_id FROM PortfolioId p")
-    List<UUID> findAllPortfolioIds();
 
 }
