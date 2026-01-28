@@ -79,7 +79,7 @@ public class RabbitStreamProducer {
         } catch (Exception e) {
             if (!e.getMessage().contains("STREAM_ALREADY_EXISTS")) {
                 throw new IllegalStateException("Failed to create RabbitMQ Stream: " + streamName, e);
-            } 
+            }
         }
     }
 
@@ -88,7 +88,7 @@ public class RabbitStreamProducer {
             throw new IllegalArgumentException("TradeEvent cannot be null");
         }
         // PEEK THE MESSAGE BEFORE SENDING
-        log.info("PEEK RabbitMQ Stream Message: {}", event);
+        // log.info("PEEK RabbitMQ Stream Message: {}", event);
 
         Message msg = producer.messageBuilder()
                 .addData(event.toByteArray())
