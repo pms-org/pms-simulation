@@ -93,10 +93,10 @@ public class TradeGeneratorService {
         long randomGapSeconds = 1 + random.nextInt(300);
         lastTimestamp = lastTimestamp.plusSeconds(randomGapSeconds);
         
-        // Ensure timestamp never goes into the future
+  
         LocalDateTime now = LocalDateTime.now();
         if (lastTimestamp.isAfter(now)) {
-            lastTimestamp = now.minusHours(1); // Reset to 1 hour ago if we've caught up to present
+            lastTimestamp = now.minusHours(1); 
         }
         
         t.setTimestamp(lastTimestamp);
