@@ -27,15 +27,21 @@ public class TradeGeneratorService {
     private LocalDateTime lastTimestamp = LocalDateTime.now().minusDays(1);
     private final Map<String, String> lastSideMap = new HashMap<>();
 
+    private List<UUID> cachedPortfolioIds;
+    private List<String> cachedSymbols;
+    private LocalDateTime lastCacheRefresh;
+    private static final long CACHE_REFRESH_MINUTES = 5;
+
     public TradeEvent generateTrade() {
 
-        // Fetch lightweight lists (ONLY IDs and Symbols)
-        List<UUID> portfolioIds = portfolioRepo.findAllPortfolioIds();
-        List<String> symbols = symbolRepo.findAllSymbols();
+        refreshCacheIfNeeded();
 
-        if (portfolioIds.isEmpty() || symbols.isEmpty()) {
+        if (cachedPortfolioIds.isEmpty() || cachedSymbols.isEmpty()) {
             throw new IllegalStateException("Portfolio or Symbol table is empty");
         }
+
+        List<UUID> portfolioIds = cachedPortfolioIds;
+        List<String> symbols = cachedSymbols;
 
         TradeEvent t = new TradeEvent();
 
@@ -94,5 +100,14 @@ public class TradeGeneratorService {
         }
         
         t.setTimestamp(lastTimestamp);
+    }
+
+    private void refreshCacheIfNeeded() {
+        if (lastCacheRefresh == null || 
+            lastCacheRefresh.plusMinutes(CACHE_REFRESH_MINUTES).isBefore(LocalDateTime.now())) {
+            cachedPortfolioIds = portfolioRepo.findAllPortfolioIds();
+            cachedSymbols = symbolRepo.findAllSymbols();
+            lastCacheRefresh = LocalDateTime.now();
+        }
     }
 }
