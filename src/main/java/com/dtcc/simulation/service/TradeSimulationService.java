@@ -20,10 +20,16 @@ public class TradeSimulationService {
     private Random random = new Random();
 
     private enum SpeedMode {
-        SLOW(200), FAST(80), VERY_FAST(20), PAUSE(2000);
+
+        SLOW(800),       // 800 ms
+        FAST(400),       // 400 ms
+        VERY_FAST(200),  // 200 ms
+        PAUSE(5000);     // 5 seconds
+
         long delayMs;
         SpeedMode(long d) { this.delayMs = d; }
-    }
+  }
+
 
     @PostConstruct
     public void start() {
