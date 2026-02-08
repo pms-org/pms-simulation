@@ -26,7 +26,7 @@ public class GatewayClient {
 
         PortfolioCreateResponse response = webClient
                 .post()
-                .uri(portfolioServiceBaseUrl + "/portfolio/api/portfolio/create")
+                .uri(portfolioServiceBaseUrl + "/api/portfolio/create")
                 .header("Authorization", authorizationHeader)
                 .bodyValue(request)
                 .retrieve()
