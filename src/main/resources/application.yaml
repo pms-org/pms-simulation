@@ -79,4 +79,4 @@ app:
 # ===============================
 portfolio:
   service:
-    base-url: http://${TRADE_CAPTURE_SERVICE_HOST}:${TRADE_CAPTURE_SERVICE_PORT}
+    base-url: http://${PORTFOLIO_SERVICE_HOST}:${PORTFOLIO_SERVICE_PORT}
